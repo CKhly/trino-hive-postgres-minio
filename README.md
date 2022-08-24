@@ -32,17 +32,17 @@ Step 3 - Create Bucket in MinIO
 
 Step 4 - Into the runnung trino container
 ```bash
-docker container exec -it trino-minio_trino-coordinator_1 trino
+docker container exec -it docker-compose_trino-coordinator_1 trino
 ```
-Step 5 -  Create schema and table and play around with trino
+Step 5 -  Create schema and table and play around with trino, you can see the trino dashboard from localhost:8080.
 ```sql
-CREATE SCHEMA minio.tiny
-WITH (location = 's3a://tiny/');
+CREATE SCHEMA minio.test
+WITH (location = 's3a://test/');
 
-CREATE TABLE minio.tiny.customer
+CREATE TABLE minio.test.customer
 WITH (
     format = 'ORC',
-    external_location = 's3a://tiny/customer/'
+    external_location = 's3a://test/customer/'
 ) 
 AS SELECT * FROM tpch.tiny.customer;
 ```
@@ -51,18 +51,18 @@ AS SELECT * FROM tpch.tiny.customer;
 ### (Optional: see the metadata store in Postgres)
 Step 6 - Into the running postgres container
 ```bash 
-docker exec -it "trino-minio_postgres_1" psql -U admin -d "hive_db"
+docker exec -it "docker-compose_postgres_1" psql -U admin -d "hive_db"
 ```
 Step 7 - Run SQL commands on postgresDB to see where the metadata is stored. 
 ```sql
 SELECT
- “DB_ID”,
- “DB_LOCATION_URI”,
- “NAME”, 
- “OWNER_NAME”,
- “OWNER_TYPE”,
- “CTLG_NAME”
-FROM ‘DBS’;
+ "DB_ID",
+ "DB_LOCATION_URI",
+ "NAME", 
+ "OWNER_NAME",
+ "OWNER_TYPE",
+ "CTLG_NAME"
+FROM "DBS";
 ```
 
 For more metadata detail, kindly check: 
@@ -73,7 +73,7 @@ Step 8 - Close down the running containers
 docker-compose down
 ```
 
-## Run Locally with Kubernetes (with kind to run locally)
+## Run Locally with Kubernetes (with Kind to run locally)
 ### Prerequisites: kubectl/ kind/ helm
 - Kubectl(https://kubernetes.io/docs/tasks/tools/): or with Mac simply try: brew install kubectl
 - Kind(https://kind.sigs.k8s.io/): or with Mac simply try: brew install kind
@@ -94,11 +94,11 @@ helm repo add minio https://charts.min.io/
 ```
 - Install Minio via Helm:
 ```
-helm install mino-test -f mino/values.yaml  minio/minio
+helm install minio-test -f minio/values.yaml  minio/minio
 ```
 - Port-forward:
 ```
-kubectl port-forward svc/mino-test-minio-console 9001
+kubectl port-forward svc/minio-test-console 9001
 ```
 - Create a bucket test from the UI:
 Step 2 - Set up Postgres
@@ -108,12 +108,13 @@ kubectl apply -f https://raw.githubusercontent.com/reactive-tech/kubegres/v1.15/
 kubectl apply -f postgres/postgres-secret.yaml
 kubectl apply -f postgres/kubegres-porstrescluster.yaml
 ```
-- Manually Create a DB after installing Postgres
+- Manually Create a DB after installing Postgres with password: postgresSuperUserPsw
 ```
-kubectl exec -it mypostgres-1-0 — /bin/sh
+kubectl exec -it mypostgres-1-0 —- /bin/sh
 psql -U postgres
-postgresSuperUserPsw
-create database metadata
+```
+```sql
+CREATE DATABASE metadata;
 ```
 Step 3 - Set up Hive Metastore
 ```
@@ -128,11 +129,11 @@ kubectl get ep | grep mini
     <value>http://10.244.1.10:9000</value>
 </property>	
 ```
-- Build Hive meta store image
+- Build Hive meta store image if first time
 ```
 docker build -t hivemetastore:3.1.3.5 -f hive/Dockerfile ./hive
 ```
--
+- Apply hive metastore configuration and create it
 ``` 
 kubectl apply -f hive/metastore-cfg.yaml
 kubectl delete -f hive/hive-meta-store-standalone.yaml 
@@ -147,7 +148,7 @@ kubectl port-forward svc/trino 8080
 
 Step 5 - Access Trino CLI and play around with it to see the  
 ```
-kubectl exec -it trino-cli /-- bin/bash 
+kubectl exec -it trino-cli -- /bin/bash 
 trino --server trino:8080 --catalog hive --schema default
 ```
 ```sql
