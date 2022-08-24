@@ -74,13 +74,13 @@ docker-compose down
 ```
 
 ## Run Locally with Kubernetes (with Kind to run locally)
-### Prerequisites: kubectl/ kind/ helm
+### Prerequisites: Kubectl/ Kind/ Helm
 - Kubectl(https://kubernetes.io/docs/tasks/tools/): or with Mac simply try: brew install kubectl
 - Kind(https://kind.sigs.k8s.io/): or with Mac simply try: brew install kind
 - Helm(https://helm.sh/) or with Mac simply try: brew install helm
  
 ### Steps
-Step 0 - Go to the docker-compose directory and set up Kubernetes
+Step 0 - Go to the kubernetes directory and set up Kubernetes
 ```bash
 cd kubernetes
 kind create cluster --config kind-cluster-config.yaml
@@ -146,7 +146,7 @@ kubectl apply -f trino/trino.yaml
 kubectl port-forward svc/trino 8080 
 ```
 
-Step 5 - Access Trino CLI and play around with it to see the  
+Step 5 - Access Trino CLI and play around with it, you can see the trino dashboard from localhost:8080.
 ```
 kubectl exec -it trino-cli -- /bin/bash 
 trino --server trino:8080 --catalog hive --schema default
