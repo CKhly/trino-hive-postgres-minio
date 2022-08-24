@@ -1,0 +1,73 @@
+# From https://github.com/joshuarobinson/trino-on-k8s/blob/master/trino-cfgs.yaml
+---
+kind: ConfigMap 
+apiVersion: v1 
+metadata:
+  name: trino-configs
+data:
+  jvm.config: |-
+    -server
+    -Xmx2G
+    -XX:-UseBiasedLocking
+    -XX:+UseG1GC
+    -XX:G1HeapRegionSize=32M
+    -XX:+ExplicitGCInvokesConcurrent
+    -XX:+ExitOnOutOfMemoryError
+    -XX:+UseGCOverheadLimit
+    -XX:+HeapDumpOnOutOfMemoryError
+    -XX:ReservedCodeCacheSize=512M
+    -Djdk.attach.allowAttachSelf=true
+    -Djdk.nio.maxCachedBufferSize=2000000
+  config.properties.coordinator: |-
+    coordinator=true
+    node-scheduler.include-coordinator=false
+    http-server.http.port=8080
+    query.max-memory=1GB
+    query.max-memory-per-node=1GB
+    #query.max-total-memory-per-node=1GB
+    query.max-stage-count=200
+    task.writer-count=4
+    discovery-server.enabled=true
+    discovery.uri=http://trino:8080
+  config.properties.worker: |-
+    coordinator=false
+    http-server.http.port=8080
+    query.max-memory=1GB
+    query.max-memory-per-node=1GB
+    query.max-stage-count=200
+    task.writer-count=4
+    discovery.uri=http://trino:8080
+  node.properties: |-
+    node.environment=test
+    spiller-spill-path=/tmp
+    max-spill-per-node=4TB
+    query-max-spill-per-node=1TB
+  hive.properties: |-
+    connector.name=hive-hadoop2
+    hive.metastore.uri=thrift://metastore:9083
+    hive.allow-drop-table=true
+    #hive.max-partitions-per-scan=1000000
+    hive.s3.endpoint=mino-test-minio-svc:9000
+    hive.s3.path-style-access=true
+    hive.s3.ssl.enabled=false
+    hive.s3.max-connections=100
+    hive.s3.aws-access-key=minio
+    hive.s3.aws-secret-key=minio123
+    hive.allow-add-column=true
+    hive.allow-drop-column=true
+    hive.allow-rename-table=true
+    hive.allow-rename-column=true
+    hive.metastore-timeout=300s
+  iceberg.properties: |-
+    connector.name=iceberg
+    hive.metastore.uri=thrift://metastore:9083
+    #hive.max-partitions-per-scan=1000000
+    hive.s3.endpoint=mino-test-minio:9000
+    hive.s3.path-style-access=true
+    hive.s3.ssl.enabled=false
+    hive.s3.max-connections=100
+  postgres.properties: |-
+    connector.name=mysql
+    connection-url=jdbc:postgresql://mypostgres:5432/metadata?allowPublicKeyRetrieval=true&amp;useSSL=false&amp;serverTimezone=UTC
+    connection-user=postgres
+    connection-password=postgresSuperUserPsw
