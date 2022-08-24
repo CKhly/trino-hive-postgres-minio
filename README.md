@@ -3,14 +3,14 @@
 This is a personal exercise for me to understand Trino and its architecture, especially with 
 Hive Metastore/ Postgres/ Minio. The idea of the exercise is originated from 
 https://trino.io/blog/2020/10/20/intro-to-hive-connector.html. The only difference is that I 
-change the DB of Hive Metastore from MariaDB to PostgresDB and try to implement it 
+changed the DB of Hive Metastore from MariaDB to PostgresDB and tried to implement it 
 with k8s with the help of https://github.com/alexcpn/presto_in_kubernetes.
 
 ## Architechure Diagram
 
 
 ## Run Locally with Docker-compose
-The implementation With docker-compose is refer to https://github.com/bitsondatadev/trino-getting-started/tree/main/hive/trino-minio 
+The implementation with docker-compose is referred to https://github.com/bitsondatadev/trino-getting-started/tree/main/hive/trino-minio 
 with the help of https://github.com/bitsondatadev/hive-metastore/pull/2/commits to build a Hive Metastore image to
 support PostgresDB.
 
