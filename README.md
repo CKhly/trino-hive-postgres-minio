@@ -7,6 +7,7 @@ changed the DB of Hive Metastore from MariaDB to PostgresDB and tried to impleme
 with k8s with the help of https://github.com/alexcpn/presto_in_kubernetes.
 
 ## Architechure Diagram
+![Exercise 1 (Trino Hive Postgres Minio on k8s)](https://user-images.githubusercontent.com/84711996/186559791-1b974247-dd1d-4ba1-bada-fe0759f5c8d4.jpeg)
 
 
 ## Run Locally with Docker-compose
